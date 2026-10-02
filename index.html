@@ -18,7 +18,6 @@
       --bg-cream: #fffafb;
       --card-bg: #ffffff;
       --pastel-border: #ffe6ed;
-      --dashed-border: #f9cdd8;
       --pink-primary: #f28b9f;
       --pink-btn: #f58ea4;
       --text-main: #735359;
@@ -44,7 +43,7 @@
       position: relative;
     }
 
-    /* Floating Emojis / Petals */
+    /* Floating Items */
     .floating-container {
       position: fixed;
       inset: 0;
@@ -74,10 +73,10 @@
       z-index: 2;
     }
 
-    /* 1. Navbar แคปซูลมนแบบเป๊ะตามรูป */
+    /* 1. Navbar แคปซูลมน */
     .nav-wrapper {
       position: relative;
-      margin-bottom: 22px;
+      margin-bottom: 28px;
       padding-right: 48px;
     }
 
@@ -133,38 +132,23 @@
     .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* หน้า 1: HOME DESIGN */
-    .banner-container {
-      width: 100%;
-      height: 140px;
-      border-radius: 26px;
-      background: #ffffff;
-      border: 1.5px solid var(--pastel-border);
-      overflow: hidden;
-      margin-bottom: -46px;
-      box-shadow: 0 4px 16px rgba(255, 220, 228, 0.4);
-    }
-    .banner-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
+    /* หน้า 1: HOME (ไม่มีแบนเนอร์) */
     .profile-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-top: 10px;
       margin-bottom: 16px;
     }
 
     .profile-ring {
-      width: 92px;
-      height: 92px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       padding: 3px;
       background: #ffffff;
       box-shadow: 0 0 0 2px #ffd3df, 0 6px 18px rgba(255, 182, 193, 0.45);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .profile-img {
@@ -179,31 +163,29 @@
       font-size: 20px;
       font-weight: 700;
       color: #5a3c42;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
-    /* กล่องข้อความต้อนรับเส้นประ */
-    .welcome-dashed-box {
-      background: #ffffff;
-      border: 1.5px dashed var(--dashed-border);
-      border-radius: 20px;
-      padding: 16px 14px;
+    /* ข้อความต้อนรับ คลีนๆ ไม่มีกรอบเส้นประ */
+    .welcome-clean-box {
+      background: transparent;
+      border: none;
+      padding: 8px 12px;
       text-align: center;
       font-size: 12.5px;
       line-height: 1.7;
       color: #7a5e64;
-      margin-bottom: 22px;
-      box-shadow: 0 2px 10px rgba(255, 219, 226, 0.2);
+      margin-bottom: 24px;
       white-space: pre-line;
     }
 
     .welcome-title {
       font-weight: 700;
       color: #63434a;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
-    /* ไฮไลท์รีวิว */
+    /* ไฮไลท์ */
     .hl-section-title {
       font-size: 13.5px;
       font-weight: 700;
@@ -257,7 +239,7 @@
       font-weight: 600;
     }
 
-    /* หน้า 2: REVIEW DESIGN */
+    /* หน้า 2: REVIEW */
     .form-card {
       background: #ffffff;
       border: 1.5px solid var(--pastel-border);
@@ -352,7 +334,7 @@
     .review-user-msg { font-size: 12px; color: #856a70; }
     .review-stars-gold { color: var(--star-color); font-size: 12px; letter-spacing: 1px; }
 
-    /* หน้า 3: CONTACT DESIGN */
+    /* หน้า 3: CONTACT */
     .contact-card-btn {
       display: flex;
       align-items: center;
@@ -390,7 +372,7 @@
     .contact-sub-txt { font-size: 11px; color: #9c8086; margin-top: 1px; }
     .contact-heart-end { font-size: 13px; color: #f7aab9; }
 
-    /* หน้า 4: DETAIL DESIGN */
+    /* หน้า 4: DETAIL */
     .detail-white-card {
       background: #ffffff;
       border: 1.5px solid var(--pastel-border);
@@ -546,10 +528,8 @@
 </head>
 <body>
 
-  <!-- เพลงพื้นหลัง -->
   <audio id="bgMusic" loop autoplay playsinline src="https://files.catbox.moe/zy1wnq.mp3"></audio>
 
-  <!-- ละอองดอกไม้ / หัวใจลอย -->
   <div class="floating-container" id="emojiContainer"></div>
 
   <div class="container">
@@ -565,14 +545,9 @@
       <button type="button" class="nav-music-btn" onclick="toggleMusic()" title="เปิด/ปิดเพลง">🎵</button>
     </div>
 
-    <!-- ----------------- หน้า 1: HOME ----------------- -->
+    <!-- ----------------- หน้า 1: HOME (ไม่มีแบนเนอร์ / ไม่มีกรอบเส้นประ) ----------------- -->
     <div id="homeSection" class="tab-content active">
       
-      <!-- ปกแบนเนอร์ด้านบน -->
-      <div class="banner-container">
-        <img id="bannerImg" class="banner-img" src="https://i.postimg.cc/m2W2f7vB/banner.jpg" alt="Banner">
-      </div>
-
       <!-- โปรไฟล์ตรงกลาง -->
       <div class="profile-wrap">
         <div class="profile-ring">
@@ -581,8 +556,8 @@
         <h1 class="shop-title" id="shopTitleText">julindamerly ♡</h1>
       </div>
 
-      <!-- กล่องข้อความต้อนรับเส้นประสีชมพู -->
-      <div class="welcome-dashed-box" id="welcomeBox">
+      <!-- ข้อความต้อนรับ คลีนๆ สบายตา ไร้กรอบเส้นประ -->
+      <div class="welcome-clean-box" id="welcomeBox">
         <div class="welcome-title" id="welcomeTitle">Welcome to julindamerly♡</div>
         <div id="welcomeBioText">app premium ขายป้าย ทำเว็บไซต์
 ♡ ส่งไว เปลี่ยนข้อมูลไว ส่งงานไวค้าบ</div>
@@ -590,9 +565,7 @@
 
       <!-- แถววงกลมไฮไลท์รีวิว -->
       <div class="hl-section-title" id="hlTitleText">🌸 review julindamerly</div>
-      <div class="hl-scroll-row" id="highlightsList">
-        <!-- วงกลมไฮไลท์จะแสดงที่นี่ -->
-      </div>
+      <div class="hl-scroll-row" id="highlightsList"></div>
 
     </div>
 
@@ -629,7 +602,7 @@
     <!-- ----------------- หน้า 3: CONTACT ----------------- -->
     <div id="contactSection" class="tab-content">
       
-      <div class="welcome-dashed-box" style="margin-bottom: 14px;">
+      <div class="welcome-clean-box" style="margin-bottom: 14px;">
         <div class="welcome-title">Contact me ♡</div>
         <div style="font-size: 11.5px; color:#9c8086;">ทักสอบถามคิวงาน หรือสั่งซื้อทางช่องทางด้านล่างได้เลยนะคะ ✨</div>
       </div>
@@ -733,11 +706,9 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ดึงค่าการตั้งค่าแบบ Real-time ทั้งหมด
     db.collection("julindamerly_site_config").doc("main_info").onSnapshot(doc => {
       if (doc.exists) {
         const d = doc.data();
-        if (d.bannerUrl) document.getElementById('bannerImg').src = d.bannerUrl;
         if (d.profile) document.getElementById('mainProfile').src = d.profile;
         if (d.storeName) {
           document.getElementById('shopTitleText').textContent = d.storeName;
@@ -767,7 +738,6 @@
       }
     });
 
-    // ดึงวงกลมไฮไลท์
     let highlightsData = [];
     let currentStoryImages = [];
     let currentStoryIndex = 0;
@@ -834,7 +804,6 @@
       else { closeStoryViewer(); }
     }
 
-    // ระบบรีวิว
     let currentRating = 5;
     function setStars(star) {
       currentRating = star;
@@ -900,7 +869,6 @@
 
     listenReviews();
 
-    // ระบบเพลง
     const music = document.getElementById('bgMusic');
     function toggleMusic() {
       if (music.paused) music.play();
@@ -911,7 +879,6 @@
       document.body.addEventListener('click', () => { if (music.paused) music.play().catch(()=>{}); }, { once: true });
     });
 
-    // ละอองตกแต่ง
     const floatIcons = ['🌸', '🩷', '✨', '🎀', '🤍'];
     const emojiContainer = document.getElementById('emojiContainer');
     setInterval(() => {
