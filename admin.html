@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard ♡ julindamerly</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-cream: #fffafb;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --pastel-pink: #f58ea4;
+      --border-soft: #fde2e8;
+      --text-main: #6e4e54;
+      --text-muted: #bda1a8;
+      --btn-gradient: linear-gradient(135deg, #fba1b5 0%, #f58ea4 100%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Quicksand', 'Mitr', sans-serif; }
+
+    body {
+      background: var(--bg-cream);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px 16px 80px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container { width: 100%; max-width: 480px; }
+
+    #loginView {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 36px 22px;
+      border: 1.5px solid var(--border-soft);
+      box-shadow: 0 6px 24px rgba(255, 204, 216, 0.35);
+      text-align: center;
+    }
+
+    .login-title { font-size: 22px; font-weight: 700; color: var(--pastel-pink); margin-bottom: 6px; }
+    .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+    .input-field, .textarea-field, .select-field {
+      width: 100%;
+      padding: 11px 16px;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 16px;
+      font-size: 13px;
+      background: #ffffff;
+      color: var(--text-main);
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .input-field:focus, .textarea-field:focus, .select-field:focus { border-color: var(--pastel-pink); }
+
+    .btn-pink {
+      width: 100%;
+      background: var(--btn-gradient);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245, 142, 164, 0.35);
+    }
+    .btn-pink:active { transform: scale(0.98); }
+
+    .error-text { color: var(--pastel-pink); font-size: 13px; margin-top: 10px; display: none; }
+    #dashboardView { display: none; }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .welcome-text { font-size: 18px; font-weight: 700; color: var(--pastel-pink); }
+    .logout-btn {
+      background: #ffffff;
+      color: var(--pastel-pink);
+      border: 1.5px solid var(--border-soft);
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .panel-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 18px 16px;
+      border: 1.5px solid var(--border-soft);
+      box-shadow: 0 4px 16px rgba(255, 219, 226, 0.25);
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--pastel-pink);
+      margin-bottom: 14px;
+    }
+
+    .form-group { text-align: left; margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+
+    .preview-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 10px;
+      display: block;
+      border: 2px solid var(--border-soft);
+    }
+
+    .album-box {
+      background: #fff8fa;
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .album-box-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .btn-del-album {
+      background: #ffe3ea;
+      color: #d81159;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .photo-thumb-wrap { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 1; }
+    .photo-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+    .btn-del-single-photo {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(216, 17, 89, 0.85);
+      color: #ffffff;
+      border: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      font-size: 9px;
+      cursor: pointer;
+    }
+
+    .review-del-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 12.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- LOGIN FORM -->
+    <div id="loginView">
+      <div class="login-card">
+        <h1 class="login-title">Admin Login ♡</h1>
+        <p class="login-sub">julindamerly control panel</p>
+        
+        <form onsubmit="handleLogin(event)">
+          <input type="email" id="loginEmail" class="input-field" placeholder="fesmarty3@gmail.com" required>
+          <input type="password" id="loginPassword" class="input-field" placeholder="mmaarrttyy" required>
+          <button type="submit" class="btn-pink">เข้าสู่ระบบ ✨</button>
+          <p id="loginError" class="error-text">อีเมลหรือรหัสผ่านไม่ถูกต้องค่ะ</p>
+        </form>
+      </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboardView">
+      
+      <div class="top-bar">
+        <div class="welcome-text">admin julindamerly ♡</div>
+        <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+      </div>
+
+      <!-- 1. ไฮไลท์: สร้างวงใหม่ & เพิ่มรูปข้างใน -->
+      <div class="panel-card">
+        <div class="panel-title">🌸 1. สร้างวงกลมไฮไลท์ใหม่</div>
+        <div class="form-group">
+          <label>ชื่อวงกลม (เช่น socute♡, รีวิว, กฎร้าน)</label>
+          <input type="text" id="newAlbumTitle" class="input-field" placeholder="socute♡">
+        </div>
+        <div class="form-group">
+          <label>รูปหน้าปกวงกลม (วางลิงก์รูป หรือเลือกไฟล์)</label>
+          <input type="text" id="newAlbumCover" class="input-field" placeholder="https://..." oninput="updateCoverPrev(this.value)">
+          <input type="file" accept="image/*" class="input-field" onchange="uploadAlbumCover(this)">
+          <img id="coverPreview" style="width:50px; height:50px; border-radius:50%; object-fit:cover; margin:6px auto 0; display:none;">
+        </div>
+        <button type="button" class="btn-pink" onclick="createAlbum()">+ สร้างวงกลมไฮไลท์นี้ ♡</button>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">📸 2. เพิ่มรูปภาพเข้าไปในวงกลมไฮไลท์</div>
+        <div class="form-group">
+          <label>เลือกวงกลมไฮไลท์</label>
+          <select id="selectAlbumTarget" class="select-field"><option value="">-- ยังไม่มีไฮไลท์ --</option></select>
+        </div>
+        <div class="form-group">
+          <label>รูปที่ต้องการเพิ่ม (ลิงก์ตรง หรือเลือกไฟล์)</label>
+          <input type="text" id="newPhotoUrl" class="input-field" placeholder="https://..." oninput="updatePhotoPrev(this.value)">
+          <input type="file" accept="image/*" class="input-field" onchange="uploadPhotoFile(this)">
+          <img id="photoPreview" style="width:55px; height:55px; border-radius:10px; object-fit:cover; margin:6px auto 0; display:none;">
+        </div>
+        <button type="button" class="btn-pink" onclick="addPhotoToAlbum()">+ เพิ่มรูปเข้าอัลบั้มนี้ ♡</button>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">📂 รายการวงกลมไฮไลท์ทั้งหมด (กดลบได้)</div>
+        <div id="albumsListContainer"><p style="font-size:12px; color:var(--text-muted); text-align:center;">กำลังโหลด...</p></div>
+      </div>
+
+      <!-- 2. ข้อมูลหน้าแรก & เพลง -->
+      <div class="panel-card">
+        <div class="panel-title">🎀 ข้อมูลหน้าแรก & รูปภาพ</div>
+
+        <div class="form-group">
+          <label>ลิงก์เพลงพื้นหลังตรง (.mp3)</label>
+          <input type="text" id="musicUrlInput" class="input-field" placeholder="https://files.catbox.moe/zy1wnq.mp3">
+        </div>
+
+        <div class="form-group">
+          <label>รูปแบนเนอร์ปกด้านบน (URL)</label>
+          <input type="text" id="bannerUrlInput" class="input-field" placeholder="https://i.postimg.cc/m2W2f7vB/banner.jpg">
+          <input type="file" accept="image/*" class="input-field" onchange="uploadBanner(this)">
+        </div>
+
+        <div class="form-group">
+          <label>รูปโปรไฟล์ร้าน</label>
+          <img id="profilePreview" class="preview-img" src="https://i.postimg.cc/Qd1mRrk5/image-8.png">
+          <input type="text" id="profileUrlInput" class="input-field" placeholder="https://..." oninput="document.getElementById('profilePreview').src = this.value">
+          <input type="file" accept="image/*" class="input-field" onchange="uploadProfile(this)">
+        </div>
+
+        <div class="form-group">
+          <label>ชื่อร้าน</label>
+          <input type="text" id="storeNameInput" class="input-field" placeholder="julindamerly ♡">
+        </div>
+
+        <div class="form-group">
+          <label>ข้อความในการ์ดต้อนรับเส้นประ</label>
+          <textarea id="storeBioInput" class="textarea-field" rows="3" placeholder="app premium ขายป้าย ทำเว็บไซต์..."></textarea>
+        </div>
+      </div>
+
+      <!-- 3. ข้อมูลหน้า Contact -->
+      <div class="panel-card">
+        <div class="panel-title">💬 ช่องทางติดต่อ (หน้า Contact)</div>
+
+        <div class="form-group">
+          <label>ปุ่มที่ 1: ลิงก์ LINE Official (URL)</label>
+          <input type="text" id="lineUrlInput" class="input-field" placeholder="https://lin.ee/wLuYEB6">
+          <label>ข้อความย่อยใต้ปุ่มที่ 1</label>
+          <input type="text" id="lineSubInput" class="input-field" placeholder="สั่งแอพพรีเมี่ยมทักได้เลยนะคะ...">
+        </div>
+
+        <div class="form-group">
+          <label>ปุ่มที่ 2: ลิงก์ LINE ส่วนตัว (URL)</label>
+          <input type="text" id="linePersonalUrlInput" class="input-field" placeholder="https://line.me">
+          <label>ข้อความย่อยใต้ปุ่มที่ 2</label>
+          <input type="text" id="linePersonalSubInput" class="input-field" placeholder="ติดต่อกรณีเร่งด่วน หรือแจ้งปัญหา">
+        </div>
+
+        <div class="form-group">
+          <label>ปุ่มที่ 3: ลิงก์ Social / X (URL)</label>
+          <input type="text" id="socialUrlInput" class="input-field" placeholder="https://x.com/julindamerly">
+          <label>หัวข้อปุ่มที่ 3</label>
+          <input type="text" id="socialTitleInput" class="input-field" placeholder="Facebook Page หรือ X">
+          <label>ข้อความย่อยใต้ปุ่มที่ 3</label>
+          <input type="text" id="socialSubInput" class="input-field" placeholder="@julindamerly อัปเดตงานทางนี้ตลอดน้า">
+        </div>
+      </div>
+
+      <!-- 4. ข้อมูลหน้า Detail -->
+      <div class="panel-card">
+        <div class="panel-title">📝 รายละเอียดร้าน (หน้า Detail)</div>
+
+        <div class="form-group">
+          <label>ข้อความรายละเอียดร้าน (เว้นบรรทัดตามที่ต้องการ)</label>
+          <textarea id="detailsTextInput" class="textarea-field" rows="6" placeholder="🎀 รายละเอียดร้านเจอร์รี่&#10;• open-close : 09:00 - 22:00 น.&#10;• หากไม่ตอบ : ไม่ตอบเกิน 2 นาที สามารถทักซ้ำได้เลยค่ะ&#10;• การแก้ไขงาน : สามารถแก้ไขได้ฟรี 2 ครั้ง&#10;• การชำระเงิน : รองรับพร้อมเพย์ ธนาคาร และวอลเล็ท"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>ข้อความการ์ดขอบคุณด้านล่าง</label>
+          <input type="text" id="thankyouTextInput" class="input-field" placeholder="ขอบคุณที่มาอุดหนุนกันนะคะ ♡">
+        </div>
+
+        <button type="button" class="btn-pink" id="saveAllBtn" onclick="saveSiteConfig()">
+          ☁️ บันทึกการเปลี่ยนแปลงหน้าเว็บทั้งหมด ♡
+        </button>
+      </div>
+
+      <!-- 5. รีวิวลูกค้า -->
+      <div class="panel-card">
+        <div class="panel-title">🗑 รีวิวจากลูกค้า (กดลบได้)</div>
+        <div id="reviewsAdminContainer"><p style="font-size:12px; color:var(--text-muted); text-align:center;">กำลังโหลด...</p></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const AUTH_EMAIL = "fesmarty3@gmail.com";
+    const AUTH_PASS  = "mmaarrttyy";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCpAGDSy1NRgmLV_g7qJrCpwOhU9MrfQyY",
+      authDomain: "benefitie.firebaseapp.com",
+      projectId: "benefitie",
+      storageBucket: "benefitie.firebasestorage.app",
+      messagingSenderId: "270365672215",
+      appId: "1:270365672215:web:230d1491091e26ce83ed52"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass  = document.getElementById('loginPassword').value.trim();
+      if (email === AUTH_EMAIL && pass === AUTH_PASS) {
+        sessionStorage.setItem('julindamerly_admin_logged', 'true');
+        document.getElementById('loginError').style.display = 'none';
+        showDashboard();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('julindamerly_admin_logged');
+      document.getElementById('dashboardView').style.display = 'none';
+      document.getElementById('loginView').style.display = 'flex';
+    }
+
+    window.onload = function() {
+      if (sessionStorage.getItem('julindamerly_admin_logged') === 'true') {
+        showDashboard();
+      }
+    };
+
+    function showDashboard() {
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
+      loadSiteConfig();
+      listenAlbumsAdmin();
+      listenReviewsAdmin();
+    }
+
+    // จัดการหน้าปกอัลบั้ม
+    let currentAlbumCover = "";
+    function updateCoverPrev(url) {
+      currentAlbumCover = url;
+      const p = document.getElementById('coverPreview');
+      if (url) { p.src = url; p.style.display = 'block'; } else { p.style.display = 'none'; }
+    }
+    function uploadAlbumCover(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { updateCoverPrev(e.target.result); document.getElementById('newAlbumCover').value = ''; };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    async function createAlbum() {
+      const title = document.getElementById('newAlbumTitle').value.trim() || 'socute♡';
+      try {
+        await db.collection("julindamerly_albums").add({
+          title: title,
+          coverUrl: currentAlbumCover || '',
+          images: currentAlbumCover ? [currentAlbumCover] : [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('newAlbumTitle').value = '';
+        document.getElementById('newAlbumCover').value = '';
+        document.getElementById('coverPreview').style.display = 'none';
+        currentAlbumCover = '';
+        alert('✨ สร้างวงกลมไฮไลท์สำเร็จแล้ว!');
+      } catch (e) { alert('สร้างไม่สำเร็จ'); }
+    }
+
+    // จัดการใส่รูปในอัลบั้ม
+    let currentPhotoImg = "";
+    function updatePhotoPrev(url) {
+      currentPhotoImg = url;
+      const p = document.getElementById('photoPreview');
+      if (url) { p.src = url; p.style.display = 'block'; } else { p.style.display = 'none'; }
+    }
+    function uploadPhotoFile(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { updatePhotoPrev(e.target.result); document.getElementById('newPhotoUrl').value = ''; };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    async function addPhotoToAlbum() {
+      const albumId = document.getElementById('selectAlbumTarget').value;
+      if (!albumId || !currentPhotoImg) { alert('กรุณาเลือกวงกลมและเลือกรูปภาพก่อนนะคะ'); return; }
+      try {
+        await db.collection("julindamerly_albums").doc(albumId).update({
+          images: firebase.firestore.FieldValue.arrayUnion(currentPhotoImg)
+        });
+        document.getElementById('newPhotoUrl').value = '';
+        document.getElementById('photoPreview').style.display = 'none';
+        currentPhotoImg = '';
+        alert('✨ เพิ่มรูปเข้าไฮไลท์เรียบร้อย!');
+      } catch (e) { alert('เพิ่มรูปไม่สำเร็จ'); }
+    }
+
+    function listenAlbumsAdmin() {
+      db.collection("julindamerly_albums").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        const container = document.getElementById('albumsListContainer');
+        const select = document.getElementById('selectAlbumTarget');
+        if (snapshot.empty) {
+          container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center;">ยังไม่มีวงกลมไฮไลท์</p>';
+          select.innerHTML = '<option value="">-- ยังไม่มีไฮไลท์ --</option>';
+          return;
+        }
+        let selHtml = '<option value="">-- เลือกวงกลมไฮไลท์ --</option>';
+        let listHtml = '';
+        snapshot.forEach(doc => {
+          const a = { id: doc.id, ...doc.data() };
+          selHtml += `<option value="${a.id}">${a.title} (${(a.images && a.images.length) || 0} รูป)</option>`;
+          const imgs = a.images || [];
+          listHtml += `
+            <div class="album-box">
+              <div class="album-box-top">
+                <span style="font-weight:700; font-size:13px;">${a.title} (${imgs.length} รูป)</span>
+                <button type="button" class="btn-del-album" onclick="deleteEntireAlbum('${a.id}')">ลบทั้งวงกลม</button>
+              </div>
+              <div class="photos-grid">
+                ${imgs.map(img => `
+                  <div class="photo-thumb-wrap">
+                    <img class="photo-thumb-img" src="${img}">
+                    <button type="button" class="btn-del-single-photo" onclick="deletePhoto('${a.id}','${img}')">✕</button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = listHtml;
+        select.innerHTML = selHtml;
+      });
+    }
+
+    async function deleteEntireAlbum(id) {
+      if (confirm('ต้องการลบวงกลมไฮไลท์นี้ใช่หรือไม่?')) await db.collection("julindamerly_albums").doc(id).delete();
+    }
+    async function deletePhoto(albumId, img) {
+      if (confirm('ต้องการลบรูปนี้ใช่หรือไม่?')) {
+        await db.collection("julindamerly_albums").doc(albumId).update({
+          images: firebase.firestore.FieldValue.arrayRemove(img)
+        });
+      }
+    }
+
+    // Config หน้าเว็บ
+    let siteConfig = {};
+    async function loadSiteConfig() {
+      try {
+        const doc = await db.collection("julindamerly_site_config").doc("main_info").get();
+        if (doc.exists) siteConfig = doc.data();
+      } catch (e) {}
+
+      document.getElementById('musicUrlInput').value = siteConfig.musicUrl || '';
+      document.getElementById('bannerUrlInput').value = siteConfig.bannerUrl || 'https://i.postimg.cc/m2W2f7vB/banner.jpg';
+      document.getElementById('profilePreview').src = siteConfig.profile || 'https://i.postimg.cc/Qd1mRrk5/image-8.png';
+      document.getElementById('profileUrlInput').value = siteConfig.profile || '';
+      document.getElementById('storeNameInput').value = siteConfig.storeName || 'julindamerly ♡';
+      document.getElementById('storeBioInput').value = siteConfig.storeBio || 'app premium ขายป้าย ทำเว็บไซต์\n♡ ส่งไว เปลี่ยนข้อมูลไว ส่งงานไวค้าบ';
+
+      document.getElementById('lineUrlInput').value = siteConfig.lineUrl || 'https://lin.ee/wLuYEB6';
+      document.getElementById('lineSubInput').value = siteConfig.lineSub || 'สั่งแอพพรีเมี่ยมทักได้เลยนะคะ งานป้าย งานเว็บไซต์';
+      document.getElementById('linePersonalUrlInput').value = siteConfig.linePersonalUrl || 'https://line.me';
+      document.getElementById('linePersonalSubInput').value = siteConfig.linePersonalSub || 'ติดต่อกรณีเร่งด่วน หรือแจ้งปัญหา';
+      document.getElementById('socialUrlInput').value = siteConfig.socialUrl || 'https://x.com/julindamerly';
+      document.getElementById('socialTitleInput').value = siteConfig.socialTitle || 'X (Twitter) / Social';
+      document.getElementById('socialSubInput').value = siteConfig.socialSub || '@julindamerly อัปเดตงานทางนี้ตลอดน้า';
+
+      // Details
+      if (siteConfig.detailsHtml) {
+        const temp = document.createElement('div');
+        temp.innerHTML = siteConfig.detailsHtml;
+        const textLines = Array.from(temp.children).map(c => c.textContent);
+        document.getElementById('detailsTextInput').value = textLines.join('\n');
+      } else {
+        document.getElementById('detailsTextInput').value = '🎀 รายละเอียดร้านเจอร์รี่\n• open-close : 09:00 - 22:00 น. (นอกเวลาทักทิ้งไว้ได้เลยค่ะ)\n• หากไม่ตอบ : ไม่ตอบเกิน 2 นาที สามารถทักซ้ำได้เลยค่ะ\n• การแก้ไขงาน : สามารถแก้ไขได้ฟรี 2 ครั้ง\n• การชำระเงิน : รองรับพร้อมเพย์ ธนาคาร และวอลเล็ท';
+      }
+      document.getElementById('thankyouTextInput').value = siteConfig.thankyouText || 'ขอบคุณที่มาอุดหนุนกันนะคะ ♡';
+    }
+
+    function uploadBanner(input) {
+      if (input.files && input.files[0]) {
+        const r = new FileReader();
+        r.onload = (e) => { siteConfig.bannerUrl = e.target.result; document.getElementById('bannerUrlInput').value = ''; };
+        r.readAsDataURL(input.files[0]);
+      }
+    }
+    function uploadProfile(input) {
+      if (input.files && input.files[0]) {
+        const r = new FileReader();
+        r.onload = (e) => {
+          siteConfig.profile = e.target.result;
+          document.getElementById('profilePreview').src = e.target.result;
+          document.getElementById('profileUrlInput').value = '';
+        };
+        r.readAsDataURL(input.files[0]);
+      }
+    }
+
+    async function saveSiteConfig() {
+      const btn = document.getElementById('saveAllBtn');
+      btn.disabled = true;
+      btn.textContent = 'กำลังบันทึก... ⏳';
+
+      const bannerVal = document.getElementById('bannerUrlInput').value.trim();
+      if (bannerVal) siteConfig.bannerUrl = bannerVal;
+
+      const profVal = document.getElementById('profileUrlInput').value.trim();
+      if (profVal) siteConfig.profile = profVal;
+
+      siteConfig.musicUrl = document.getElementById('musicUrlInput').value.trim();
+      siteConfig.storeName = document.getElementById('storeNameInput').value.trim();
+      siteConfig.storeBio = document.getElementById('storeBioInput').value.trim();
+
+      siteConfig.lineUrl = document.getElementById('lineUrlInput').value.trim();
+      siteConfig.lineSub = document.getElementById('lineSubInput').value.trim();
+      siteConfig.linePersonalUrl = document.getElementById('linePersonalUrlInput').value.trim();
+      siteConfig.linePersonalSub = document.getElementById('linePersonalSubInput').value.trim();
+      siteConfig.socialUrl = document.getElementById('socialUrlInput').value.trim();
+      siteConfig.socialTitle = document.getElementById('socialTitleInput').value.trim();
+      siteConfig.socialSub = document.getElementById('socialSubInput').value.trim();
+
+      const lines = document.getElementById('detailsTextInput').value.trim().split('\n');
+      siteConfig.detailsHtml = lines.map((l, i) => {
+        if (i === 0) return `<div class="detail-card-header">${l}</div>`;
+        return `<div>${l}</div>`;
+      }).join('');
+
+      siteConfig.thankyouText = document.getElementById('thankyouTextInput').value.trim();
+
+      try {
+        await db.collection("julindamerly_site_config").doc("main_info").set(siteConfig);
+        alert('✨ บันทึกการเปลี่ยนแปลงหน้าเว็บทั้งหมดสำเร็จ!');
+      } catch (e) { alert('บันทึกไม่สำเร็จ'); }
+      finally { btn.disabled = false; btn.textContent = '☁️ บันทึกการเปลี่ยนแปลงหน้าเว็บทั้งหมด ♡'; }
+    }
+
+    function listenReviewsAdmin() {
+      db.collection("julindamerly_reviews").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        const container = document.getElementById('reviewsAdminContainer');
+        if (snapshot.empty) { container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center;">ไม่มีรีวิว</p>'; return; }
+        let html = '';
+        snapshot.forEach(doc => {
+          const r = doc.data();
+          html += `
+            <div class="review-del-row">
+              <div><b>${r.name}</b> (${'★'.repeat(r.stars || 5)}): ${r.feedback}</div>
+              <button class="btn-del-album" onclick="deleteReview('${doc.id}')">ลบ</button>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      });
+    }
+
+    async function deleteReview(id) {
+      if (confirm('ต้องการลบรีวิวนี้ใช่หรือไม่?')) await db.collection("julindamerly_reviews").doc(id).delete();
+    }
+  </script>
+</body>
+</html>
