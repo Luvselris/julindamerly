@@ -76,7 +76,7 @@
     /* 1. Navbar แคปซูลมน */
     .nav-wrapper {
       position: relative;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
       padding-right: 48px;
     }
 
@@ -132,23 +132,40 @@
     .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* หน้า 1: HOME (ไม่มีแบนเนอร์) */
+    /* กรอบแบนเนอร์ (อยู่ด้านบน แยกเดี่ยว ไม่ทับโปรไฟล์) */
+    .banner-container {
+      width: 100%;
+      height: 140px;
+      border-radius: 24px;
+      background: #ffffff;
+      border: 1.5px solid var(--pastel-border);
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(255, 220, 228, 0.35);
+    }
+    .banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ส่วนโปรไฟล์ */
     .profile-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .profile-ring {
-      width: 96px;
-      height: 96px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       padding: 3px;
       background: #ffffff;
       box-shadow: 0 0 0 2px #ffd3df, 0 6px 18px rgba(255, 182, 193, 0.45);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .profile-img {
@@ -163,14 +180,14 @@
       font-size: 20px;
       font-weight: 700;
       color: #5a3c42;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     /* ข้อความต้อนรับ คลีนๆ ไม่มีกรอบเส้นประ */
     .welcome-clean-box {
       background: transparent;
       border: none;
-      padding: 8px 12px;
+      padding: 4px 12px;
       text-align: center;
       font-size: 12.5px;
       line-height: 1.7;
@@ -185,7 +202,7 @@
       margin-bottom: 4px;
     }
 
-    /* ไฮไลท์ */
+    /* แถวไฮไลท์ */
     .hl-section-title {
       font-size: 13.5px;
       font-weight: 700;
@@ -239,7 +256,7 @@
       font-weight: 600;
     }
 
-    /* หน้า 2: REVIEW */
+    /* REVIEW STYLES */
     .form-card {
       background: #ffffff;
       border: 1.5px solid var(--pastel-border);
@@ -334,7 +351,7 @@
     .review-user-msg { font-size: 12px; color: #856a70; }
     .review-stars-gold { color: var(--star-color); font-size: 12px; letter-spacing: 1px; }
 
-    /* หน้า 3: CONTACT */
+    /* CONTACT STYLES */
     .contact-card-btn {
       display: flex;
       align-items: center;
@@ -372,7 +389,7 @@
     .contact-sub-txt { font-size: 11px; color: #9c8086; margin-top: 1px; }
     .contact-heart-end { font-size: 13px; color: #f7aab9; }
 
-    /* หน้า 4: DETAIL */
+    /* DETAIL STYLES */
     .detail-white-card {
       background: #ffffff;
       border: 1.5px solid var(--pastel-border);
@@ -545,10 +562,15 @@
       <button type="button" class="nav-music-btn" onclick="toggleMusic()" title="เปิด/ปิดเพลง">🎵</button>
     </div>
 
-    <!-- ----------------- หน้า 1: HOME (ไม่มีแบนเนอร์ / ไม่มีกรอบเส้นประ) ----------------- -->
+    <!-- ----------------- หน้า 1: HOME ----------------- -->
     <div id="homeSection" class="tab-content active">
       
-      <!-- โปรไฟล์ตรงกลาง -->
+      <!-- แบนเนอร์อยู่ด้านบน แยกเดี่ยวชัดเจน -->
+      <div class="banner-container">
+        <img id="bannerImg" class="banner-img" src="https://i.postimg.cc/m2W2f7vB/banner.jpg" alt="Banner">
+      </div>
+
+      <!-- โปรไฟล์อยู่ถัดลงมา ไม่ทับแบนเนอร์ -->
       <div class="profile-wrap">
         <div class="profile-ring">
           <img id="mainProfile" class="profile-img" src="https://i.postimg.cc/Qd1mRrk5/image-8.png" alt="Profile">
@@ -556,7 +578,7 @@
         <h1 class="shop-title" id="shopTitleText">julindamerly ♡</h1>
       </div>
 
-      <!-- ข้อความต้อนรับ คลีนๆ สบายตา ไร้กรอบเส้นประ -->
+      <!-- ข้อความต้อนรับ คลีนๆ สบายตา ไม่มีกรอบเส้นประ -->
       <div class="welcome-clean-box" id="welcomeBox">
         <div class="welcome-title" id="welcomeTitle">Welcome to julindamerly♡</div>
         <div id="welcomeBioText">app premium ขายป้าย ทำเว็บไซต์
@@ -709,6 +731,7 @@
     db.collection("julindamerly_site_config").doc("main_info").onSnapshot(doc => {
       if (doc.exists) {
         const d = doc.data();
+        if (d.bannerUrl) document.getElementById('bannerImg').src = d.bannerUrl;
         if (d.profile) document.getElementById('mainProfile').src = d.profile;
         if (d.storeName) {
           document.getElementById('shopTitleText').textContent = d.storeName;
