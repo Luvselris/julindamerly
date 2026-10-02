@@ -914,6 +914,20 @@
       emojiContainer.appendChild(el);
       setTimeout(() => { el.remove(); }, 14000);
     }, 1200);
+        // แตะฝั่งซ้ายย้อนกลับ / แตะฝั่งขวาไปข้างหน้า เหมือนไอจี
+    const storyWrap = document.querySelector('.story-image-wrap');
+    if (storyWrap) {
+      storyWrap.addEventListener('click', (e) => {
+        const rect = storyWrap.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        if (clickX > rect.width / 2) {
+          nextStoryImage();
+        } else {
+          prevStoryImage();
+        }
+      });
+    }
+
   </script>
 </body>
 </html>
